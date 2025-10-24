@@ -176,7 +176,7 @@ function updateNotifications() {
         {
             icon: 'market',
             title: 'Market Update',
-            text: 'S&P 500 showing strong performance today',
+            text: '[Market Index] showing [Performance Description] today',
             time: 'Just now'
         },
         {
@@ -282,7 +282,7 @@ function generateIPS() {
         showSuccessNotification();
         
         // Simulate adding to client documents
-        console.log(`IPS document generated for ${selectedClient}`);
+        console.log(`IPS document generated for Client Name ${selectedClient.replace('client', '')}`);
         
     }, 3000); // 3 second simulation
 }
