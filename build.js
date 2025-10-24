@@ -20,7 +20,8 @@ const filesToCopy = [
     'index.html',
     'styles.css', 
     'script.js',
-    'aws-config.js'
+    'aws-config.js',
+    'cognito-auth.js'
 ];
 
 // Copy files
