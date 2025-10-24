@@ -172,6 +172,35 @@ body {
     font-weight: 500;
 }
 
+.add-task-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 0.5rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.add-task-btn:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+    color: #475569;
+    transform: translateY(-1px);
+}
+
+.add-task-btn i {
+    font-size: 0.8rem;
+}
+
 /* Meeting List */
 .meeting-list {
     display: flex;

@@ -175,15 +175,21 @@ function updateNotifications() {
     const notificationTemplates = [
         {
             icon: 'market',
-            title: 'Market Update',
-            text: '[Market Index] showing [Performance Description] today',
+            title: 'ETF Performance Update',
+            text: 'Our ETF performance vs market performance - [ETF Name] up [Percentage] vs [Market Index] up [Percentage]',
             time: 'Just now'
         },
         {
             icon: 'client',
             title: 'Client Activity',
-            text: 'New client document uploaded',
+            text: 'Shows client activity - Client Name [Number] logged into their portal',
             time: '2 minutes ago'
+        },
+        {
+            icon: 'system',
+            title: 'ETF Changes',
+            text: 'Changes in our ETF - [ETF Name] rebalancing completed, new holdings added',
+            time: '5 minutes ago'
         }
     ];
     
@@ -363,6 +369,70 @@ document.addEventListener('change', function(event) {
     }
 });
 
+// Add new task functionality
+function addNewTask() {
+    const taskText = prompt('Enter new task:');
+    if (taskText && taskText.trim()) {
+        const taskList = document.querySelector('.task-list');
+        const taskCount = taskList.children.length;
+        const newTaskId = `task${taskCount + 1}`;
+        
+        const newTask = document.createElement('div');
+        newTask.className = 'task-item';
+        newTask.innerHTML = `
+            <input type="checkbox" id="${newTaskId}">
+            <label for="${newTaskId}">${taskText.trim()}</label>
+            <span class="task-time">${getCurrentTime()}</span>
+        `;
+        
+        // Add event listener for the new checkbox
+        const checkbox = newTask.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('change', function() {
+            handleTaskCompletion(this);
+        });
+        
+        taskList.appendChild(newTask);
+        
+        // Show success message
+        showTaskAddedNotification();
+    }
+}
+
+function getCurrentTime() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+    return `${displayHours}:${displayMinutes} ${ampm}`;
+}
+
+function showTaskAddedNotification() {
+    // Create a temporary notification
+    const notification = document.createElement('div');
+    notification.className = 'notification success';
+    notification.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>Task added successfully!</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Show notification
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Hide notification after 2 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 2000);
+}
+
 // Export functions for global access
 window.openIPSGenerator = openIPSGenerator;
 window.closeIPSModal = closeIPSModal;
@@ -371,3 +441,4 @@ window.openClientModal = openClientModal;
 window.openMeetingModal = openMeetingModal;
 window.generateReport = generateReport;
 window.scheduleMeeting = scheduleMeeting;
+window.addNewTask = addNewTask;
