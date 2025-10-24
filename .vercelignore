@@ -1,0 +1,16 @@
+# Ignore files that shouldn't be deployed to Vercel
+node_modules/
+.git/
+.env
+*.log
+.DS_Store
+Thumbs.db
+
+# AWS deployment files
+deploy-aws.sh
+setup-aws-resources.js
+env.example
+
+# Development files
+*.md
+README.md

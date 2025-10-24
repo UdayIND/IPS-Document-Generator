@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "name": "financial-advisor-dashboard",
+  "builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "outputDirectory": ".",
+  "installCommand": "npm install",
+  "buildCommand": "echo 'No build process required for static site'",
+  "devCommand": "python -m http.server 8000"
+}
