@@ -4,6 +4,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializeDashboard();
     setupEventListeners();
+    initializeAWS();
     loadDashboardData();
 });
 
@@ -229,22 +230,162 @@ function addNewNotification(notification) {
     }, 100);
 }
 
+// Initialize AWS services
+function initializeAWS() {
+    try {
+        // Initialize AWS services
+        const awsServices = initializeAWS();
+        
+        if (awsServices) {
+            // Initialize managers
+            window.kpiManager = new KPIManager(awsServices);
+            window.taskManager = new TaskManager(awsServices);
+            window.documentManager = new DocumentManager(awsServices);
+            window.notificationManager = new NotificationManager(awsServices);
+            
+            console.log('✅ AWS services initialized successfully');
+        } else {
+            console.warn('⚠️ AWS services not available. Running in demo mode.');
+        }
+    } catch (error) {
+        console.error('❌ Error initializing AWS services:', error);
+        console.warn('⚠️ Running in demo mode without AWS integration.');
+    }
+}
+
 // Load dashboard data
-function loadDashboardData() {
-    // Simulate loading dashboard data
+async function loadDashboardData() {
     console.log('Loading dashboard data...');
     
-    // You would typically make API calls here to load:
-    // - KPI data
-    // - Task lists
-    // - Meeting schedules
-    // - Client pipeline data
-    // - Notifications
+    try {
+        // Load KPIs from AWS
+        if (window.kpiManager) {
+            const kpis = await window.kpiManager.fetchKPIs();
+            if (kpis) {
+                updateKPIDisplay(kpis);
+            }
+        }
+        
+        // Load tasks from AWS
+        if (window.taskManager) {
+            const tasks = await window.taskManager.fetchTasks();
+            if (tasks && tasks.length > 0) {
+                updateTaskDisplay(tasks);
+            }
+        }
+        
+        // Load notifications from AWS
+        if (window.notificationManager) {
+            const notifications = await window.notificationManager.fetchNotifications();
+            if (notifications && notifications.length > 0) {
+                updateNotificationDisplay(notifications);
+            }
+        }
+        
+        console.log('✅ Dashboard data loaded successfully');
+    } catch (error) {
+        console.error('❌ Error loading dashboard data:', error);
+        console.log('📊 Using demo data instead');
+    }
+}
+
+// Update KPI display with real data
+function updateKPIDisplay(kpis) {
+    // Update AUM
+    const aumCard = document.querySelector('.kpi-card:nth-child(1) .kpi-value');
+    if (aumCard && kpis.aum) {
+        aumCard.textContent = `$${kpis.aum.toLocaleString()}M`;
+    }
     
-    // For demo purposes, we'll just log the data loading
-    setTimeout(() => {
-        console.log('Dashboard data loaded successfully');
-    }, 1000);
+    // Update NNA
+    const nnaCard = document.querySelector('.kpi-card:nth-child(2) .kpi-value');
+    if (nnaCard && kpis.nna) {
+        nnaCard.textContent = `$${kpis.nna.toLocaleString()}M`;
+    }
+    
+    // Update client count
+    const clientCard = document.querySelector('.kpi-card:nth-child(3) .kpi-value');
+    if (clientCard && kpis.clientCount) {
+        clientCard.textContent = kpis.clientCount.toString();
+    }
+    
+    // Update portfolio return
+    const returnCard = document.querySelector('.kpi-card:nth-child(4) .kpi-value');
+    if (returnCard && kpis.portfolioReturn) {
+        returnCard.textContent = `+${kpis.portfolioReturn}%`;
+    }
+}
+
+// Update task display with real data
+function updateTaskDisplay(tasks) {
+    const taskList = document.querySelector('.task-list');
+    if (!taskList) return;
+    
+    // Clear existing tasks
+    taskList.innerHTML = '';
+    
+    // Add tasks from AWS
+    tasks.forEach((task, index) => {
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item';
+        taskItem.innerHTML = `
+            <input type="checkbox" id="task-${task.taskId}" ${task.completed ? 'checked' : ''}>
+            <label for="task-${task.taskId}">${task.taskText}</label>
+            <span class="task-time">${new Date(task.createdAt).toLocaleTimeString()}</span>
+        `;
+        
+        // Add event listener
+        const checkbox = taskItem.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('change', function() {
+            handleTaskCompletion(this);
+            // Update in AWS
+            if (window.taskManager) {
+                window.taskManager.updateTaskStatus(task.taskId, this.checked);
+            }
+        });
+        
+        taskList.appendChild(taskItem);
+    });
+}
+
+// Update notification display with real data
+function updateNotificationDisplay(notifications) {
+    const notificationList = document.querySelector('.notifications-list');
+    if (!notificationList) return;
+    
+    // Clear existing notifications
+    notificationList.innerHTML = '';
+    
+    // Add notifications from AWS
+    notifications.forEach(notification => {
+        const notificationItem = document.createElement('div');
+        notificationItem.className = 'notification-item';
+        
+        // Determine icon based on type
+        let iconClass = 'system';
+        let iconSymbol = 'fas fa-cog';
+        
+        if (notification.type === 'market' || notification.type === 'etf') {
+            iconClass = 'market';
+            iconSymbol = 'fas fa-chart-line';
+        } else if (notification.type === 'client') {
+            iconClass = 'client';
+            iconSymbol = 'fas fa-user';
+        }
+        
+        notificationItem.innerHTML = `
+            <div class="notification-icon ${iconClass}">
+                <i class="${iconSymbol}"></i>
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">${notification.type.charAt(0).toUpperCase() + notification.type.slice(1)}</div>
+                <div class="notification-text">${notification.message}</div>
+                <div class="notification-time">${new Date(notification.createdAt).toLocaleString()}</div>
+            </div>
+        `;
+        
+        notificationList.appendChild(notificationItem);
+    });
 }
 
 // IPS Generator Functions
@@ -370,31 +511,49 @@ document.addEventListener('change', function(event) {
 });
 
 // Add new task functionality
-function addNewTask() {
+async function addNewTask() {
     const taskText = prompt('Enter new task:');
     if (taskText && taskText.trim()) {
-        const taskList = document.querySelector('.task-list');
-        const taskCount = taskList.children.length;
-        const newTaskId = `task${taskCount + 1}`;
-        
-        const newTask = document.createElement('div');
-        newTask.className = 'task-item';
-        newTask.innerHTML = `
-            <input type="checkbox" id="${newTaskId}">
-            <label for="${newTaskId}">${taskText.trim()}</label>
-            <span class="task-time">${getCurrentTime()}</span>
-        `;
-        
-        // Add event listener for the new checkbox
-        const checkbox = newTask.querySelector('input[type="checkbox"]');
-        checkbox.addEventListener('change', function() {
-            handleTaskCompletion(this);
-        });
-        
-        taskList.appendChild(newTask);
-        
-        // Show success message
-        showTaskAddedNotification();
+        try {
+            // Add task to AWS if available
+            if (window.taskManager) {
+                const success = await window.taskManager.addTask(taskText.trim());
+                if (success) {
+                    // Reload tasks from AWS
+                    const tasks = await window.taskManager.fetchTasks();
+                    if (tasks && tasks.length > 0) {
+                        updateTaskDisplay(tasks);
+                    }
+                }
+            } else {
+                // Fallback to local storage
+                const taskList = document.querySelector('.task-list');
+                const taskCount = taskList.children.length;
+                const newTaskId = `task${taskCount + 1}`;
+                
+                const newTask = document.createElement('div');
+                newTask.className = 'task-item';
+                newTask.innerHTML = `
+                    <input type="checkbox" id="${newTaskId}">
+                    <label for="${newTaskId}">${taskText.trim()}</label>
+                    <span class="task-time">${getCurrentTime()}</span>
+                `;
+                
+                // Add event listener for the new checkbox
+                const checkbox = newTask.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', function() {
+                    handleTaskCompletion(this);
+                });
+                
+                taskList.appendChild(newTask);
+            }
+            
+            // Show success message
+            showTaskAddedNotification();
+        } catch (error) {
+            console.error('Error adding task:', error);
+            alert('Failed to add task. Please try again.');
+        }
     }
 }
 

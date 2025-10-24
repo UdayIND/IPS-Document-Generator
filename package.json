@@ -1,0 +1,33 @@
+{
+  "name": "financial-advisor-dashboard",
+  "version": "1.0.0",
+  "description": "Modern Financial Advisor Dashboard with AWS Integration",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000",
+    "build": "echo 'No build process required for static site'",
+    "deploy": "aws s3 sync . s3://advisor-dashboard-bucket --delete",
+    "setup-aws": "node setup-aws-resources.js"
+  },
+  "keywords": [
+    "financial",
+    "advisor",
+    "dashboard",
+    "aws",
+    "lambda",
+    "dynamodb",
+    "s3"
+  ],
+  "author": "Steve Seid",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.1500.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
