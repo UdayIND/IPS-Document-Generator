@@ -6,10 +6,10 @@
   "scripts": {
     "start": "python -m http.server 8000",
     "dev": "python -m http.server 8000",
-    "build": "echo 'No build process required for static site'",
+    "build": "node build.js",
     "deploy": "aws s3 sync . s3://advisor-dashboard-bucket --delete",
     "setup-aws": "node setup-aws-resources.js",
-    "vercel-build": "echo 'Static site - no build required'"
+    "vercel-build": "node build.js"
   },
   "keywords": [
     "financial",

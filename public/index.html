@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Advisor Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1500.0.min.js"></script>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-chart-line"></i>
+            <span>Advisor Dashboard</span>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-primary">
+                <i class="fas fa-plus"></i>
+                New Client
+            </button>
+            <button class="btn-secondary">
+                <i class="fas fa-calendar-plus"></i>
+                Schedule Meeting
+            </button>
+            <div class="user-profile">
+                <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
+                <span>Steve Seid</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-tasks"></i> Today's Tasks</h3>
+                <div class="task-list">
+                    <div class="task-item">
+                        <input type="checkbox" id="task1">
+                        <label for="task1">Review Client Name 1 portfolio rebalancing</label>
+                        <span class="task-time">9:00 AM</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" id="task2">
+                        <label for="task2">Call Client Name 2 about retirement planning</label>
+                        <span class="task-time">10:30 AM</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" id="task3">
+                        <label for="task3">Prepare quarterly reports</label>
+                        <span class="task-time">2:00 PM</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" id="task4">
+                        <label for="task4">Follow up with prospect Client Name 3</label>
+                        <span class="task-time">3:30 PM</span>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="addNewTask()">
+                    <i class="fas fa-plus"></i>
+                    Add Task
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3><i class="fas fa-calendar-alt"></i> Today's Meetings</h3>
+                <div class="meeting-list">
+                    <div class="meeting-item">
+                        <div class="meeting-time">9:00 AM</div>
+                        <div class="meeting-details">
+                            <div class="meeting-title">Client Name 1 Portfolio Review</div>
+                            <div class="meeting-client">Client Name 1</div>
+                        </div>
+                    </div>
+                    <div class="meeting-item">
+                        <div class="meeting-time">2:00 PM</div>
+                        <div class="meeting-details">
+                            <div class="meeting-title">New Client Onboarding</div>
+                            <div class="meeting-client">Client Name 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- KPI Cards -->
+            <section class="kpi-section">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Assets Under Management</h3>
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="kpi-value">[Total AUM]</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <small>Calculated from: Sum of all client account balances across custodians</small>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Net New Assets</h3>
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="kpi-value">[New Assets]</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <small>Calculated from: New deposits + transfers in - withdrawals - transfers out</small>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Total Clients</h3>
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="kpi-value">[Client Count]</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <small>Calculated from: Active client records in CRM system</small>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Portfolio Return</h3>
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="kpi-value">[Return %]</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <small>Calculated from: Weighted average of all client portfolio returns</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Client Pipeline -->
+            <section class="pipeline-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-funnel-dollar"></i> Client Pipeline</h2>
+                    <button class="btn-outline">View All</button>
+                </div>
+                <div class="pipeline-stages">
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <h4>Initial Contact</h4>
+                            <span class="stage-count">8</span>
+                        </div>
+                        <div class="stage-clients">
+                            <div class="client-card">
+                                <div class="client-name">Client Name 4</div>
+                                <div class="client-status">Contacted 2 days ago</div>
+                            </div>
+                            <div class="client-card">
+                                <div class="client-name">Client Name 5</div>
+                                <div class="client-status">Follow-up scheduled</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <h4>Discovery Meeting</h4>
+                            <span class="stage-count">5</span>
+                        </div>
+                        <div class="stage-clients">
+                            <div class="client-card">
+                                <div class="client-name">Client Name 6</div>
+                                <div class="client-status">Meeting tomorrow</div>
+                            </div>
+                            <div class="client-card">
+                                <div class="client-name">Client Name 7</div>
+                                <div class="client-status">Needs follow-up</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <h4>Proposal</h4>
+                            <span class="stage-count">3</span>
+                        </div>
+                        <div class="stage-clients">
+                            <div class="client-card">
+                                <div class="client-name">Client Name 8</div>
+                                <div class="client-status">Proposal sent</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <h4>Onboarding</h4>
+                            <span class="stage-count">2</span>
+                        </div>
+                        <div class="stage-clients">
+                            <div class="client-card">
+                                <div class="client-name">Client Name 9</div>
+                                <div class="client-status">Paperwork pending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications & News -->
+            <section class="notifications-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-bell"></i> What's New</h2>
+                </div>
+                <div class="notifications-list">
+                    <div class="notification-item">
+                        <div class="notification-icon market">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">ETF Performance Update</div>
+                            <div class="notification-text">Our ETF performance vs market performance - [ETF Name] up [Percentage] vs [Market Index] up [Percentage]</div>
+                            <div class="notification-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon client">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">Client Activity</div>
+                            <div class="notification-text">Shows client activity - Client Name 1 logged into their portal</div>
+                            <div class="notification-time">4 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon system">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">ETF Changes</div>
+                            <div class="notification-text">Changes in our ETF - [ETF Name] rebalancing completed, new holdings added</div>
+                            <div class="notification-time">1 day ago</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                </div>
+                <div class="actions-grid">
+                    <button class="action-card" onclick="openClientModal()">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add New Client</span>
+                    </button>
+                    <button class="action-card" onclick="openMeetingModal()">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Schedule Meeting</span>
+                    </button>
+                    <button class="action-card" onclick="generateReport()">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Generate Report</span>
+                    </button>
+                    <button class="action-card" onclick="openIPSGenerator()">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Generate IPS</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- IPS Generator Modal -->
+    <div id="ipsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Generate Investment Policy Statement</h3>
+                <button class="close-btn" onclick="closeIPSModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="client-selector">
+                    <label for="clientSelect">Select Client:</label>
+                    <select id="clientSelect">
+                        <option value="">Choose a client...</option>
+                        <option value="client1">Client Name 1</option>
+                        <option value="client2">Client Name 2</option>
+                        <option value="client3">Client Name 3</option>
+                        <option value="client4">Client Name 4</option>
+                    </select>
+                </div>
+                <div class="ips-options">
+                    <label>
+                        <input type="checkbox" checked> Include risk tolerance analysis
+                    </label>
+                    <label>
+                        <input type="checkbox" checked> Include asset allocation
+                    </label>
+                    <label>
+                        <input type="checkbox" checked> Include rebalancing schedule
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeIPSModal()">Cancel</button>
+                <button class="btn-primary" onclick="generateIPS()">
+                    <i class="fas fa-spinner fa-spin" id="ipsSpinner" style="display: none;"></i>
+                    Generate IPS PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="successNotification" class="notification success">
+        <i class="fas fa-check-circle"></i>
+        <span>IPS document generated successfully!</span>
+    </div>
+
+    <!-- AWS Configuration -->
+    <script src="aws-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

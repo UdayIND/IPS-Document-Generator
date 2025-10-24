@@ -3,18 +3,22 @@
   "name": "financial-advisor-dashboard",
   "builds": [
     {
-      "src": "index.html",
+      "src": "public/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "src": "/",
+      "dest": "/public/index.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/public/$1"
     }
   ],
-  "outputDirectory": ".",
+  "outputDirectory": "public",
   "installCommand": "npm install",
-  "buildCommand": "echo 'No build process required for static site'",
+  "buildCommand": "echo 'Static site - no build required'",
   "devCommand": "python -m http.server 8000"
 }
