@@ -24,6 +24,11 @@ const filesToCopy = [
     'cognito-auth.js'
 ];
 
+// Additional files to include in deployment
+const additionalFiles = [
+    'lambda_get_client_pdf.py'
+];
+
 // Copy files
 filesToCopy.forEach(file => {
     const sourcePath = path.join(__dirname, file);

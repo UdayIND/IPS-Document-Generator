@@ -425,8 +425,8 @@ function generateIPS() {
         // Close modal
         closeIPSModal();
         
-        // Show success notification with download button
-        showSuccessNotificationWithDownload(selectedClient);
+        // Show success notification
+        showSuccessNotification();
         
         // Simulate adding to client documents
         console.log(`IPS document generated for Client Name ${selectedClient.replace('client', '')}`);
@@ -440,146 +440,6 @@ function showSuccessNotification() {
     
     setTimeout(() => {
         notification.classList.remove('show');
-    }, 3000);
-}
-
-function showSuccessNotificationWithDownload(selectedClient) {
-    // Create enhanced notification with download button
-    const notification = document.createElement('div');
-    notification.className = 'notification success enhanced';
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas fa-check-circle"></i>
-            <div class="notification-text">
-                <strong>IPS Document Generated Successfully!</strong>
-                <p>Investment Policy Statement for Client Name ${selectedClient.replace('client', '')} is ready for download.</p>
-            </div>
-            <button class="download-btn" onclick="downloadIPSDocument('${selectedClient}')">
-                <i class="fas fa-download"></i>
-                Download PDF
-            </button>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Show notification with animation
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    
-    // Hide notification after 10 seconds (longer for download)
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 300);
-    }, 10000);
-}
-
-function downloadIPSDocument(clientId) {
-    // Simulate PDF download
-    const clientName = `Client Name ${clientId.replace('client', '')}`;
-    const fileName = `IPS_${clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-    
-    // Create a mock PDF content (in real implementation, this would be the actual PDF)
-    const mockPDFContent = `%PDF-1.4
-1 0 obj
-<<
-/Type /Catalog
-/Pages 2 0 R
->>
-endobj
-
-2 0 obj
-<<
-/Type /Pages
-/Kids [3 0 R]
-/Count 1
->>
-endobj
-
-3 0 obj
-<<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 4 0 R
->>
-endobj
-
-4 0 obj
-<<
-/Length 44
->>
-stream
-BT
-/F1 12 Tf
-100 700 Td
-(Investment Policy Statement for ${clientName}) Tj
-ET
-endstream
-endobj
-
-xref
-0 5
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-0000000204 00000 n 
-trailer
-<<
-/Size 5
-/Root 1 0 R
->>
-startxref
-297
-%%EOF`;
-    
-    // Create blob and download
-    const blob = new Blob([mockPDFContent], { type: 'application/pdf' });
-    const url = window.URL.createObjectURL(blob);
-    
-    const downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = fileName;
-    downloadLink.style.display = 'none';
-    
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-    
-    // Clean up
-    window.URL.revokeObjectURL(url);
-    
-    // Show download confirmation
-    showDownloadConfirmation(fileName);
-}
-
-function showDownloadConfirmation(fileName) {
-    const confirmation = document.createElement('div');
-    confirmation.className = 'notification success';
-    confirmation.innerHTML = `
-        <i class="fas fa-download"></i>
-        <span>Download started: ${fileName}</span>
-    `;
-    
-    document.body.appendChild(confirmation);
-    
-    setTimeout(() => {
-        confirmation.classList.add('show');
-    }, 100);
-    
-    setTimeout(() => {
-        confirmation.classList.remove('show');
-        setTimeout(() => {
-            if (confirmation.parentNode) {
-                confirmation.parentNode.removeChild(confirmation);
-            }
-        }, 300);
     }, 3000);
 }
 
